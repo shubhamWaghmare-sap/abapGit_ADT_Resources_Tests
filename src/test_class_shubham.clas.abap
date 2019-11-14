@@ -11,10 +11,12 @@ ENDCLASS.
 
 
 
-CLASS test_class_shubham IMPLEMENTATION.
+CLASS TEST_CLASS_SHUBHAM IMPLEMENTATION.
+
+
   METHOD printhello.
     WRITE 'Hello'.
     WRITE 'World'.
+    WRITE 'In GUI'.
   ENDMETHOD.
-
 ENDCLASS.
