@@ -5,4 +5,4 @@
 *&---------------------------------------------------------------------*
 REPORT PRINT_PROG.
 
-WRITE 'Hello World In GUI'.
+WRITE 'Hello World In GUI 2'.
