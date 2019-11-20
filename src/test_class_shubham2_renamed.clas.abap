@@ -1,4 +1,4 @@
-CLASS test_class_shubham2 DEFINITION
+CLASS test_class_shubham2_renamed DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -11,7 +11,7 @@ ENDCLASS.
 
 
 
-CLASS test_class_shubham2 IMPLEMENTATION.
+CLASS test_class_shubham2_renamed IMPLEMENTATION.
   METHOD printhello.
     WRITE 'hello'.
   ENDMETHOD.

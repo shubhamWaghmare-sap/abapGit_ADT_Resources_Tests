@@ -3,7 +3,7 @@
  <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
   <asx:values>
    <VSEOCLASS>
-    <CLSNAME>TEST_CLASS_SHUBHAM2</CLSNAME>
+    <CLSNAME>TEST_CLASS_SHUBHAM2_RENAMED</CLSNAME>
     <LANGU>E</LANGU>
     <DESCRIPT>Test class</DESCRIPT>
     <STATE>1</STATE>
