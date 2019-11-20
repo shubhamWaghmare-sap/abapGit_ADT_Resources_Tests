@@ -17,6 +17,6 @@ CLASS TEST_CLASS_SHUBHAM IMPLEMENTATION.
   METHOD printhello.
     WRITE 'Hello'. " edited in ADT
     WRITE 'World'.
-    WRITE 'In GUI'.
+    WRITE 'In GUI'. " edited again
   ENDMETHOD.
 ENDCLASS.
