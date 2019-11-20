@@ -18,5 +18,6 @@ CLASS TEST_CLASS_SHUBHAM IMPLEMENTATION.
     WRITE 'Hello'. " edited in ADT
     WRITE 'World'.
     WRITE 'In GUI'. " edited again
+    WRITE 'In adt now'.
   ENDMETHOD.
 ENDCLASS.
