@@ -14,7 +14,7 @@ ENDCLASS.
 CLASS test_class_shubham2_renamed IMPLEMENTATION.
   METHOD printhello.
     WRITE 'hello'.
-    Write 'renamed class'.
+    Write 'renamed class'. "The class was renamed
 
   ENDMETHOD.
 
