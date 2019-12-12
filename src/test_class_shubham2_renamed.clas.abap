@@ -17,6 +17,7 @@ CLASS test_class_shubham2_renamed IMPLEMENTATION.
     Write 'renamed class'. "The class was renamed
     WRITE 'To check '.
     WRITE 'Checking abapGit Object'.
+    WRITE 'Checking the checks uri'.
   ENDMETHOD.
 
 ENDCLASS.
