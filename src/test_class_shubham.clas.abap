@@ -4,7 +4,7 @@ CLASS test_class_shubham DEFINITION
   CREATE PUBLIC .
 
   PUBLIC SECTION.
-    METHODS calculate
+    METHODS add
     IMPORTING  a TYPE I
                b TYPE I.
   PROTECTED SECTION.
@@ -15,7 +15,7 @@ ENDCLASS.
 
 CLASS test_class_shubham IMPLEMENTATION.
 
-  METHOD calculate.
+  METHOD add.
     Data c TYPE i.
     c = a + b.
     WRITE c.
