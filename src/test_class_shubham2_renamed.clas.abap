@@ -18,7 +18,8 @@ CLASS test_class_shubham2_renamed IMPLEMENTATION.
     WRITE 'To check '.
     WRITE 'Checking abapGit Object'.
     WRITE 'Checking the checks uri'.
-    WRITE 'Checking serializer of repo and pull'.
+    WRITE 'Checking serializer of repo and pull in github'.
+    WRITE 'Checking end to end'.
   ENDMETHOD.
 
 ENDCLASS.
