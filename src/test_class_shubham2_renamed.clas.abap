@@ -20,6 +20,7 @@ CLASS test_class_shubham2_renamed IMPLEMENTATION.
     WRITE 'Checking the checks uri'.
     WRITE 'Checking serializer of repo and pull in github'.
     WRITE 'Checking end to end'.
+    WRITE 'Test stage and push'.
   ENDMETHOD.
 
 ENDCLASS.
