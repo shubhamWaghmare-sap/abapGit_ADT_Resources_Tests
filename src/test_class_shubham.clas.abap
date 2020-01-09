@@ -18,7 +18,8 @@ CLASS test_class_shubham IMPLEMENTATION.
   METHOD add.
     Data c TYPE i.
     c = a + b.
-    WRITE c.
+    WRITE : 'C:',
+             c.
   ENDMETHOD.
 
 ENDCLASS.
