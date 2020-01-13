@@ -13,5 +13,6 @@ ENDCLASS.
 
 CLASS test_new_class IMPLEMENTATION.
 METHOD add.
+WRITE 'This is Add method'.
 ENDMETHOD.
 ENDCLASS.
