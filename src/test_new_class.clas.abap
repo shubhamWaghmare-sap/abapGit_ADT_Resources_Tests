@@ -13,6 +13,5 @@ ENDCLASS.
 
 CLASS test_new_class IMPLEMENTATION.
 METHOD add.
-Write 'add'.
 ENDMETHOD.
 ENDCLASS.
