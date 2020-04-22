@@ -20,7 +20,6 @@ CLASS test_class_shubham IMPLEMENTATION.
     c = a + b.
     """Written C
     WRITE : 'C:'.
-    """"New comment
   ENDMETHOD.
 
 ENDCLASS.
