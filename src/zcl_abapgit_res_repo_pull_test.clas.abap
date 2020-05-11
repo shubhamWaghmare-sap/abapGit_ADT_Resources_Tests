@@ -159,72 +159,28 @@ CLASS ZCL_ABAPGIT_RES_REPO_PULL_TEST IMPLEMENTATION.
         IF lv_pull_sync <> 'X'.
           "[A4C_AGIT] START asynchronous/background processing ------------------
 
-          DATA lo_job_scheduler TYPE REF TO if_cbo_job_scheduler.
-          DATA lo_job_action    TYPE REF TO if_cbo_job_action.
+          DATA(lo_bg_action) = cl_abapgit_bg_action_factory=>get_action_instance( iv_repo_key = lv_repo_key
+                                                                                  iv_action   = if_abapgit_app_log=>c_action_pull ).
 
-*-------- check if a different action is still running
-          DATA(ls_repo) = cl_abapgit_persist_factory=>get_repo( )->read( iv_key = lv_repo_key iv_with_status = abap_true ).
-          IF ls_repo-status = if_abapgit_app_log=>c_run_status-running.
-            CASE ls_repo-action.
-              WHEN if_abapgit_app_log=>c_action_push.
-                response->set_body_data( content_handler = cl_adt_rest_cnt_hdl_factory=>get_instance( )->get_handler_for_plain_text( )
-                                         data            = |Another Push is currently running| ) .
-              WHEN if_abapgit_app_log=>c_action_pull.
-                response->set_body_data( content_handler = cl_adt_rest_cnt_hdl_factory=>get_instance( )->get_handler_for_plain_text( )
-                                         data            = |Another Pull is currently running| ) .
-              WHEN OTHERS.
-                cx_abapgit_exception=>raise( 'Unknown Action Type' ).
-            ENDCASE.
-            response->set_status( cl_rest_status_code=>gc_client_error_conflict ). "409
-            EXIT.
-          ELSEIF ls_repo-status = if_abapgit_app_log=>c_run_status-initial.
-            CASE ls_repo-action.
-              WHEN if_abapgit_app_log=>c_action_push.
-                response->set_body_data( content_handler = cl_adt_rest_cnt_hdl_factory=>get_instance( )->get_handler_for_plain_text( )
-                     data            = |Another Push action is waiting to be executed| ) .
-              WHEN if_abapgit_app_log=>c_action_pull.
-                response->set_body_data( content_handler = cl_adt_rest_cnt_hdl_factory=>get_instance( )->get_handler_for_plain_text( )
-                     data            = |Another Pull action is waiting to be executed| ) .
-              WHEN OTHERS.
-                cx_abapgit_exception=>raise( 'Unknown Action Type' ).
-            ENDCASE.
-            response->set_status( cl_rest_status_code=>gc_client_error_conflict ). "409
-            EXIT.
-          ENDIF.
+          "define parameter for background job
+          DATA(lv_type) = lo_bg_action->get_param_type( ).
+          DATA ls_param TYPE REF TO data.
+          FIELD-SYMBOLS <lv_field> TYPE any.
+          CREATE DATA ls_param TYPE (lv_type).
+          ASSIGN ls_param->* TO FIELD-SYMBOL(<ls_param>).
 
-          "Create new log in history table before starting batch processing
-          DATA(lo_log_factory) = cl_abapgit_app_log_factory=>get_instance( ).
+          ASSIGN COMPONENT 'BRANCH'           OF STRUCTURE <ls_param> TO <lv_field>. <lv_field> = ls_request_data-branch.
+          ASSIGN COMPONENT 'TRANSPORTREQUEST' OF STRUCTURE <ls_param> TO <lv_field>. <lv_field> = ls_request_data-transportrequest.
+          lo_bg_action->set_param( ir_param = REF #( <ls_param> ) ).
 
+          "provide repository credentials
+          DATA ls_credentials TYPE tsa4c_abapgit_credentials.
+          ls_credentials-user     = ls_request_data-user.
+          ls_credentials-password = ls_request_data-password.
+          lo_bg_action->set_credentials( ls_credentials ).
 
-          DATA(lo_log) = lo_log_factory->create_new( iv_repo_key    = lv_repo_key
-                                            iv_repo_branch = ls_request_data-branch
-                                            iv_repo_action = if_abapgit_app_log=>c_action_pull ).
-          lo_log->save( ).
-
-          DATA ls_alog_key TYPE tsa4c_agit_applog_key.
-          ls_alog_key-app_log = lo_log->get_data( )-app_log.
-
-          "Execute background job
-          lo_job_scheduler = NEW cl_cbo_job_scheduler( ).
-
-
-          lo_job_action = NEW cl_abapgit_repo_pull_action(
-          is_alog_key = ls_alog_key
-          iv_repo_key = lv_repo_key
-          is_req_data = ls_request_data ).
-
-
-
-          "create new job from action
-          lo_job_scheduler->start_job(
-            EXPORTING
-              io_action  = lo_job_action
-              iv_job_user = sy-uname
-            IMPORTING
-              es_job_key = DATA(ls_job_key) ).
-          IF ls_job_key IS NOT INITIAL.
-            lo_log->set_batch_job( iv_jobname = ls_job_key-job_name iv_jobcount = ls_job_key-job_count ).
-          ENDIF.
+          "schedule pull
+          lo_bg_action->schedule_job( ).
 
           response->set_status( cl_rest_status_code=>gc_success_accepted ).
 
@@ -268,10 +224,10 @@ CLASS ZCL_ABAPGIT_RES_REPO_PULL_TEST IMPLEMENTATION.
           ls_checks-transport-transport = ls_request_data-transportrequest.
 
           "get log
-          lo_log_factory = cl_abapgit_app_log_factory=>get_instance( ).
+          DATA(lo_log_factory) = cl_abapgit_app_log_factory=>get_instance( ).
 
 
-          lo_log = lo_log_factory->create_new( iv_repo_key    = lv_repo_key
+          DATA(lo_log) = lo_log_factory->create_new( iv_repo_key    = lv_repo_key
                                                       iv_repo_branch = ls_request_data-branch
                                                       iv_repo_action = if_abapgit_app_log=>c_action_pull ).
 
@@ -296,6 +252,10 @@ CLASS ZCL_ABAPGIT_RES_REPO_PULL_TEST IMPLEMENTATION.
           "OLD: END synchronous/dialog processing ------------------
         ENDIF.
 *---- Handle issues
+      CATCH cx_abapgit_bg_action_running INTO DATA(lx_bg_action_running).
+        cx_adt_rest_abapgit=>raise_with_error(
+            ix_error       = lx_bg_action_running
+            iv_http_status = cl_rest_status_code=>gc_client_error_conflict ). "409
       CATCH cx_abapgit_exception cx_abapgit_app_log cx_a4c_logger cx_cbo_job_scheduler cx_uuid_error cx_abapgit_not_found INTO DATA(lx_exception).
         IF lo_log IS BOUND.
           lo_log->add_exception( lx_exception ).
