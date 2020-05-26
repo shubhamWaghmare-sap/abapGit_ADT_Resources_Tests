@@ -13,6 +13,5 @@ ENDCLASS.
 
 CLASS test_new_class IMPLEMENTATION.
 METHOD add.
-"no comment
 ENDMETHOD.
 ENDCLASS.
